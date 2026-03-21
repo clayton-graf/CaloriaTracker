@@ -1,0 +1,268 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B001 /* AppDelegate.swift */; };
+		A002 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B002 /* SceneDelegate.swift */; };
+		A003 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B003 /* Models.swift */; };
+		A004 /* RootContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B004 /* RootContainerViewController.swift */; };
+		A005 /* SideMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B005 /* SideMenuViewController.swift */; };
+		A006 /* DashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B006 /* DashboardViewController.swift */; };
+		A007 /* FoodsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B007 /* FoodsViewController.swift */; };
+		A008 /* FoodPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B008 /* FoodPickerViewController.swift */; };
+		A009 /* LaunchesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B009 /* LaunchesViewController.swift */; };
+		A010 /* GoalsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B010 /* GoalsViewController.swift */; };
+		A011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B012 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B002 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		B003 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		B004 /* RootContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootContainerViewController.swift; sourceTree = "<group>"; };
+		B005 /* SideMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuViewController.swift; sourceTree = "<group>"; };
+		B006 /* DashboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewController.swift; sourceTree = "<group>"; };
+		B007 /* FoodsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodsViewController.swift; sourceTree = "<group>"; };
+		B008 /* FoodPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodPickerViewController.swift; sourceTree = "<group>"; };
+		B009 /* LaunchesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchesViewController.swift; sourceTree = "<group>"; };
+		B010 /* GoalsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsViewController.swift; sourceTree = "<group>"; };
+		B011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B013 /* CaloriaTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = CaloriaTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D001 = {
+			isa = PBXGroup;
+			children = (
+				D002 /* CaloriaTracker */,
+				D003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D002 /* CaloriaTracker */ = {
+			isa = PBXGroup;
+			children = (
+				B001 /* AppDelegate.swift */,
+				B002 /* SceneDelegate.swift */,
+				B003 /* Models.swift */,
+				B004 /* RootContainerViewController.swift */,
+				B005 /* SideMenuViewController.swift */,
+				B006 /* DashboardViewController.swift */,
+				B007 /* FoodsViewController.swift */,
+				B008 /* FoodPickerViewController.swift */,
+				B009 /* LaunchesViewController.swift */,
+				B010 /* GoalsViewController.swift */,
+				B011 /* Info.plist */,
+				B012 /* Assets.xcassets */,
+			);
+			path = CaloriaTracker;
+			sourceTree = "<group>";
+		};
+		D003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B013 /* CaloriaTracker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E001 /* CaloriaTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F003 /* Build configuration list for PBXNativeTarget "CaloriaTracker" */;
+			buildPhases = (
+				C002 /* Sources */,
+				C001 /* Frameworks */,
+				C003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CaloriaTracker;
+			productName = CaloriaTracker;
+			productReference = B013 /* CaloriaTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					E001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = F002 /* Build configuration list for PBXProject "CaloriaTracker" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"pt-BR",
+			);
+			mainGroup = D001;
+			productRefGroup = D003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E001 /* CaloriaTracker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A011 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A001 /* AppDelegate.swift in Sources */,
+				A002 /* SceneDelegate.swift in Sources */,
+				A003 /* Models.swift in Sources */,
+				A004 /* RootContainerViewController.swift in Sources */,
+				A005 /* SideMenuViewController.swift in Sources */,
+				A006 /* DashboardViewController.swift in Sources */,
+				A007 /* FoodsViewController.swift in Sources */,
+				A008 /* FoodPickerViewController.swift in Sources */,
+				A009 /* LaunchesViewController.swift in Sources */,
+				A010 /* GoalsViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		G001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		G002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		G003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3664NKJ7V2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CaloriaTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = br.inf.intelidata.CaloriaTrackerDrawer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		G004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3664NKJ7V2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CaloriaTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = br.inf.intelidata.CaloriaTrackerDrawer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F002 /* Build configuration list for PBXProject "CaloriaTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G001 /* Debug */,
+				G002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F003 /* Build configuration list for PBXNativeTarget "CaloriaTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G003 /* Debug */,
+				G004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F001 /* Project object */;
+}
