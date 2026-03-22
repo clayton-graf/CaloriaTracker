@@ -6,20 +6,28 @@ extension Notification.Name {
 }
 
 enum FoodMeasure: String, CaseIterable, Codable {
-    case weight100g = "por 100 g"
-    case unit = "por unidade"
+    case weight100g = "100g"
+    case unit = "Unidade"
 }
 
 struct FoodItem: Identifiable, Hashable, Codable {
     let id: UUID
     var name: String
     var measure: FoodMeasure
-    var calories: Int
-    var proteins: Int
-    var fats: Int
-    var carbs: Int
+    var calories: Double
+    var proteins: Double
+    var fats: Double
+    var carbs: Double
 
-    init(id: UUID = UUID(), name: String, measure: FoodMeasure, calories: Int, proteins: Int, fats: Int, carbs: Int) {
+    init(
+        id: UUID = UUID(),
+        name: String,
+        measure: FoodMeasure,
+        calories: Double,
+        proteins: Double,
+        fats: Double,
+        carbs: Double
+    ) {
         self.id = id
         self.name = name
         self.measure = measure
@@ -27,6 +35,33 @@ struct FoodItem: Identifiable, Hashable, Codable {
         self.proteins = proteins
         self.fats = fats
         self.carbs = carbs
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, measure, calories, proteins, fats, carbs
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        measure = try container.decode(FoodMeasure.self, forKey: .measure)
+        calories = try container.decodeFlexibleDouble(forKey: .calories)
+        proteins = try container.decodeFlexibleDouble(forKey: .proteins)
+        fats = try container.decodeFlexibleDouble(forKey: .fats)
+        carbs = try container.decodeFlexibleDouble(forKey: .carbs)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(measure, forKey: .measure)
+        try container.encode(calories, forKey: .calories)
+        try container.encode(proteins, forKey: .proteins)
+        try container.encode(fats, forKey: .fats)
+        try container.encode(carbs, forKey: .carbs)
     }
 }
 
@@ -100,10 +135,10 @@ final class AppStore {
 
     private var defaultFoods: [FoodItem] {
         [
-            FoodItem(name: "Arroz cozido", measure: .weight100g, calories: 130, proteins: 3, fats: 0, carbs: 28),
-            FoodItem(name: "Aveia", measure: .weight100g, calories: 389, proteins: 17, fats: 7, carbs: 66),
-            FoodItem(name: "Banana", measure: .unit, calories: 89, proteins: 1, fats: 0, carbs: 23),
-            FoodItem(name: "Ovo", measure: .unit, calories: 78, proteins: 6, fats: 5, carbs: 1)
+            FoodItem(name: "Arroz cozido", measure: .weight100g, calories: 130.0, proteins: 3.0, fats: 0.3, carbs: 28.0),
+            FoodItem(name: "Aveia", measure: .weight100g, calories: 389.0, proteins: 17.0, fats: 7.0, carbs: 66.0),
+            FoodItem(name: "Banana", measure: .unit, calories: 89.0, proteins: 1.1, fats: 0.3, carbs: 23.0),
+            FoodItem(name: "Ovo", measure: .unit, calories: 78.0, proteins: 6.0, fats: 5.0, carbs: 0.6)
         ]
     }
 
@@ -132,7 +167,7 @@ final class AppStore {
             }
     }
 
-    func totals(for date: Date) -> (calories: Int, proteins: Int, fats: Int, carbs: Int) {
+    func totals(for date: Date) -> (calories: Double, proteins: Double, fats: Double, carbs: Double) {
         let dayLaunches = launches(for: date)
         var totalCalories = 0.0
         var totalProteins = 0.0
@@ -141,13 +176,18 @@ final class AppStore {
 
         for entry in dayLaunches {
             let factor = entry.food.measure == .weight100g ? Double(entry.quantity) / 100.0 : Double(entry.quantity)
-            totalCalories += Double(entry.food.calories) * factor
-            totalProteins += Double(entry.food.proteins) * factor
-            totalFats += Double(entry.food.fats) * factor
-            totalCarbs += Double(entry.food.carbs) * factor
+            totalCalories += entry.food.calories * factor
+            totalProteins += entry.food.proteins * factor
+            totalFats += entry.food.fats * factor
+            totalCarbs += entry.food.carbs * factor
         }
 
-        return (Int(totalCalories.rounded()), Int(totalProteins.rounded()), Int(totalFats.rounded()), Int(totalCarbs.rounded()))
+        return (
+            totalCalories.roundedToOneDecimal(),
+            totalProteins.roundedToOneDecimal(),
+            totalFats.roundedToOneDecimal(),
+            totalCarbs.roundedToOneDecimal()
+        )
     }
 
     func replaceGoals(_ newGoals: DailyGoals) {
@@ -191,7 +231,6 @@ final class AppStore {
         launches.removeAll { $0.id == launch.id }
         persistAndNotify()
     }
-
 
     func backupFileURL() throws -> URL {
         save()
@@ -254,6 +293,39 @@ final class AppStore {
     }
 }
 
+extension KeyedDecodingContainer {
+    func decodeFlexibleDouble(forKey key: Key) throws -> Double {
+        if let doubleValue = try? decode(Double.self, forKey: key) {
+            return doubleValue
+        }
+        if let intValue = try? decode(Int.self, forKey: key) {
+            return Double(intValue)
+        }
+        if let stringValue = try? decode(String.self, forKey: key) {
+            let normalized = stringValue.replacingOccurrences(of: ",", with: ".")
+            if let value = Double(normalized) {
+                return value
+            }
+        }
+        throw DecodingError.dataCorruptedError(forKey: key, in: self, debugDescription: "Valor numérico inválido")
+    }
+}
+
+extension Double {
+    func roundedToOneDecimal() -> Double {
+        (self * 10).rounded() / 10
+    }
+
+    var formattedOneDecimalPTBR: String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 1
+        formatter.maximumFractionDigits = 1
+        return formatter.string(from: NSNumber(value: self)) ?? "0,0"
+    }
+}
+
 extension Date {
     func addingDays(_ days: Int) -> Date {
         Calendar.current.date(byAdding: .day, value: days, to: self) ?? self
@@ -310,14 +382,7 @@ extension UIViewController {
         view.endEditing(true)
     }
 
-    func applyIntegerKeyboardAccessory(to fields: [UITextField]) {
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let flexible = UIBarButtonItem(systemItem: .flexibleSpace)
-        let done = UIBarButtonItem(title: "Concluir", style: .done, target: self, action: #selector(endEditingFromTap))
-        toolbar.items = [flexible, done]
-        fields.forEach { $0.inputAccessoryView = toolbar }
-    }
+    func applyIntegerKeyboardAccessory(to fields: [UITextField]) { }
 }
 
 final class PaddingLabel: UILabel {
@@ -329,7 +394,9 @@ final class PaddingLabel: UILabel {
 
     override var intrinsicContentSize: CGSize {
         let size = super.intrinsicContentSize
-        return CGSize(width: size.width + contentInsets.left + contentInsets.right,
-                      height: size.height + contentInsets.top + contentInsets.bottom)
+        return CGSize(
+            width: size.width + contentInsets.left + contentInsets.right,
+            height: size.height + contentInsets.top + contentInsets.bottom
+        )
     }
 }

@@ -105,7 +105,10 @@ final class DashboardViewController: UIViewController {
         stackView.addArrangedSubview(makeMacroBarsCard(goals: goals, totals: totals))
     }
 
-    private func makeMacroBarsCard(goals: DailyGoals, totals: (calories: Int, proteins: Int, fats: Int, carbs: Int)) -> UIView {
+    private func makeMacroBarsCard(
+        goals: DailyGoals,
+        totals: (calories: Double, proteins: Double, fats: Double, carbs: Double)
+    ) -> UIView {
         let card = UIView()
         card.backgroundColor = .secondarySystemBackground
         card.layer.cornerRadius = 16
@@ -115,10 +118,10 @@ final class DashboardViewController: UIViewController {
         titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
 
         let rows = UIStackView(arrangedSubviews: [
-            makeBarRow(title: "Calorias", value: totals.calories, goal: goals.calories, unit: "kcal"),
-            makeBarRow(title: "Proteínas", value: totals.proteins, goal: goals.proteins, unit: "g"),
-            makeBarRow(title: "Gorduras", value: totals.fats, goal: goals.fats, unit: "g"),
-            makeBarRow(title: "Carboidratos", value: totals.carbs, goal: goals.carbs, unit: "g")
+            makeBarRow(title: "Calorias", value: totals.calories, goal: Double(goals.calories), unit: "kcal"),
+            makeBarRow(title: "Proteínas", value: totals.proteins, goal: Double(goals.proteins), unit: "g"),
+            makeBarRow(title: "Gorduras", value: totals.fats, goal: Double(goals.fats), unit: "g"),
+            makeBarRow(title: "Carboidratos", value: totals.carbs, goal: Double(goals.carbs), unit: "g")
         ])
         rows.axis = .vertical
         rows.spacing = 14
@@ -138,18 +141,14 @@ final class DashboardViewController: UIViewController {
         return card
     }
 
-    private func makeBarRow(title: String, value: Int, goal: Int, unit: String) -> UIView {
+    private func makeBarRow(title: String, value: Double, goal: Double, unit: String) -> UIView {
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.font = .systemFont(ofSize: 17, weight: .medium)
 
-        let balance = goal - value
+        let balance = (goal - value).roundedToOneDecimal()
         let detailText: String
-        if balance >= 0 {
-            detailText = "\(value) / \(goal) \(unit) • faltam \(balance) \(unit)"
-        } else {
-            detailText = "\(value) / \(goal) \(unit) • excedido \(abs(balance)) \(unit)"
-        }
+        detailText = "\(value.formattedOneDecimalPTBR) / \(goal.formattedOneDecimalPTBR) \(unit)"
 
         let valueLabel = UILabel()
         valueLabel.text = detailText
@@ -165,7 +164,7 @@ final class DashboardViewController: UIViewController {
         labels.spacing = 8
 
         let progress = UIProgressView(progressViewStyle: .default)
-        let progressValue: Float = goal > 0 ? min(Float(value) / Float(goal), 1.0) : 0
+        let progressValue: Float = goal > 0 ? min(Float(value / goal), 1.0) : 0
         progress.progress = progressValue
         progress.trackTintColor = .systemGray5
         progress.progressTintColor = balance < 0 ? .systemRed : .systemBlue
@@ -208,3 +207,4 @@ final class DashboardViewController: UIViewController {
         return card
     }
 }
+

@@ -51,7 +51,11 @@ final class LaunchesViewController: UIViewController {
 
     @objc private func addLaunch() {
         guard !AppStore.shared.foods.isEmpty else {
-            let alert = UIAlertController(title: "Cadastre um alimento primeiro", message: "Você precisa ter ao menos um alimento cadastrado para lançar consumo.", preferredStyle: .alert)
+            let alert = UIAlertController(
+                title: "Cadastre um alimento primeiro",
+                message: "Você precisa ter ao menos um alimento cadastrado para lançar consumo.",
+                preferredStyle: .alert
+            )
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             present(alert, animated: true)
             return
@@ -65,7 +69,12 @@ final class LaunchesViewController: UIViewController {
     }
 
     private func showQuantityEditor(food: FoodItem, existing: LaunchEntry?) {
-        let alert = UIAlertController(title: food.name, message: food.measure == .weight100g ? "Quantidade em gramas" : "Quantidade em unidades", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: food.name,
+            message: food.measure == .weight100g ? "Quantidade em gramas" : "Quantidade em unidades",
+            preferredStyle: .alert
+        )
+
         alert.addTextField { tf in
             tf.placeholder = food.measure == .weight100g ? "gramas" : "unidades"
             tf.keyboardType = .numberPad
@@ -73,14 +82,17 @@ final class LaunchesViewController: UIViewController {
                 tf.text = "\(existing.quantity)"
             }
         }
+
         alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
         alert.addAction(UIAlertAction(title: "Salvar", style: .default) { [weak self] _ in
             guard let self else { return }
+
             let raw = (alert.textFields?.first?.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             guard !raw.isEmpty, raw.allSatisfy({ $0.isNumber }), let quantity = Int(raw), quantity > 0 else {
                 self.showMessage(title: "Quantidade inválida", message: "Informe um número inteiro maior que zero.")
                 return
             }
+
             if let existing {
                 AppStore.shared.updateLaunch(existing, food: food, quantity: quantity, date: self.selectedDate)
                 self.showToast(message: "Lançamento atualizado")
@@ -89,6 +101,7 @@ final class LaunchesViewController: UIViewController {
                 self.showToast(message: "Lançamento salvo")
             }
         })
+
         present(alert, animated: true)
     }
 
@@ -98,20 +111,12 @@ final class LaunchesViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    private func presentActions(for entry: LaunchEntry) {
-        let sheet = UIAlertController(title: entry.food.name, message: "Hoje", preferredStyle: .actionSheet)
-        sheet.addAction(UIAlertAction(title: "Editar quantidade", style: .default) { [weak self] _ in
-            self?.showQuantityEditor(food: entry.food, existing: entry)
-        })
-        sheet.addAction(UIAlertAction(title: "Excluir", style: .destructive) { [weak self] _ in
-            self?.confirmDelete(entry)
-        })
-        sheet.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
-        present(sheet, animated: true)
-    }
-
     private func confirmDelete(_ entry: LaunchEntry) {
-        let alert = UIAlertController(title: "Excluir lançamento", message: "Deseja remover esse lançamento de hoje?", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "Excluir lançamento",
+            message: "Deseja remover esse lançamento de hoje?",
+            preferredStyle: .alert
+        )
         alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
         alert.addAction(UIAlertAction(title: "Excluir", style: .destructive) { [weak self] _ in
             AppStore.shared.deleteLaunch(entry)
@@ -140,17 +145,14 @@ extension LaunchesViewController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "launch") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "launch")
         let item = dayLaunches[indexPath.row]
         let factor = item.food.measure == .weight100g ? Double(item.quantity) / 100.0 : Double(item.quantity)
-        let kcal = Double(item.food.calories) * factor
+        let kcal = item.food.calories * factor
         let quantityText = "\(item.quantity)"
-        cell.textLabel?.text = item.food.name
-        cell.detailTextLabel?.text = String(format: "%@ %@ • %.0f kcal", quantityText, item.food.measure == .weight100g ? "g" : "un", kcal)
-        cell.accessoryType = .disclosureIndicator
-        return cell
-    }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        presentActions(for: dayLaunches[indexPath.row])
+        cell.textLabel?.text = item.food.name
+        cell.detailTextLabel?.text = "\(quantityText) \(item.food.measure == .weight100g ? "g" : "un") • \(kcal.formattedOneDecimalPTBR) kcal"
+        cell.accessoryType = .none
+        cell.selectionStyle = .none
+        return cell
     }
 
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -172,3 +174,4 @@ extension LaunchesViewController: UITableViewDataSource, UITableViewDelegate {
         return config
     }
 }
+

@@ -76,13 +76,15 @@ extension FoodPickerViewController: UISearchBarDelegate {
 }
 
 extension FoodPickerViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { filteredFoods.count }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        filteredFoods.count
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "picker") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "picker")
         let food = filteredFoods[indexPath.row]
         cell.textLabel?.text = food.name
-        cell.detailTextLabel?.text = "\(food.measure.rawValue) • \(food.calories) kcal"
+        cell.detailTextLabel?.text = "\(food.measure.rawValue) • \(food.calories.formattedOneDecimalPTBR) kcal"
         cell.accessoryType = .disclosureIndicator
         return cell
     }
@@ -94,3 +96,4 @@ extension FoodPickerViewController: UITableViewDataSource, UITableViewDelegate {
         navigationController?.popViewController(animated: true)
     }
 }
+

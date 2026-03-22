@@ -78,23 +78,6 @@ final class FoodsViewController: UIViewController {
         navigationController?.pushViewController(editor, animated: true)
     }
 
-    private func presentActions(for food: FoodItem) {
-        let sheet = UIAlertController(title: food.name, message: food.measure.rawValue, preferredStyle: .actionSheet)
-        sheet.addAction(UIAlertAction(title: "Editar", style: .default) { [weak self] _ in
-            let editor = FoodEditorViewController(existing: food)
-            editor.onSave = { [weak self] updated in
-                AppStore.shared.updateFood(updated)
-                self?.showToast(message: "Alimento atualizado")
-            }
-            self?.navigationController?.pushViewController(editor, animated: true)
-        })
-        sheet.addAction(UIAlertAction(title: "Excluir", style: .destructive) { [weak self] _ in
-            self?.confirmDelete(food)
-        })
-        sheet.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
-        present(sheet, animated: true)
-    }
-
     private func confirmDelete(_ food: FoodItem) {
         let message = "Ao excluir \"\(food.name)\", os lançamentos relacionados também serão removidos."
         let alert = UIAlertController(title: "Excluir alimento", message: message, preferredStyle: .alert)
@@ -114,20 +97,18 @@ extension FoodsViewController: UISearchBarDelegate {
 }
 
 extension FoodsViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { filteredFoods.count }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        filteredFoods.count
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "food") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "food")
         let food = filteredFoods[indexPath.row]
         cell.textLabel?.text = food.name
-        cell.detailTextLabel?.text = "\(food.measure.rawValue) • \(food.calories) kcal • P \(food.proteins) • G \(food.fats) • C \(food.carbs)"
-        cell.accessoryType = .disclosureIndicator
+        cell.detailTextLabel?.text = "\(food.measure.rawValue) • \(food.calories.formattedOneDecimalPTBR) kcal • P \(food.proteins.formattedOneDecimalPTBR) • G \(food.fats.formattedOneDecimalPTBR) • C \(food.carbs.formattedOneDecimalPTBR)"
+        cell.accessoryType = .none
+        cell.selectionStyle = .none
         return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        presentActions(for: filteredFoods[indexPath.row])
     }
 
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -224,10 +205,10 @@ final class FoodEditorViewController: UIViewController, UITextFieldDelegate {
         ])
 
         configure(field: nameField, placeholder: "Nome do alimento", keyboard: .default)
-        configure(field: caloriesField, placeholder: "Ex: 130", keyboard: .numberPad)
-        configure(field: proteinsField, placeholder: "Ex: 3", keyboard: .numberPad)
-        configure(field: fatsField, placeholder: "Ex: 0", keyboard: .numberPad)
-        configure(field: carbsField, placeholder: "Ex: 28", keyboard: .numberPad)
+        configure(field: caloriesField, placeholder: "Ex: 130,0", keyboard: .decimalPad)
+        configure(field: proteinsField, placeholder: "Ex: 3,0", keyboard: .decimalPad)
+        configure(field: fatsField, placeholder: "Ex: 0,3", keyboard: .decimalPad)
+        configure(field: carbsField, placeholder: "Ex: 28,0", keyboard: .decimalPad)
 
         stackView.addArrangedSubview(makeLabeledField(title: "Nome", field: nameField))
         stackView.addArrangedSubview(makeMeasureField())
@@ -243,7 +224,7 @@ final class FoodEditorViewController: UIViewController, UITextFieldDelegate {
         field.keyboardType = keyboard
         field.delegate = self
         field.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        if keyboard == .numberPad {
+        if keyboard == .numberPad || keyboard == .decimalPad {
             field.textAlignment = .right
         }
     }
@@ -301,24 +282,51 @@ final class FoodEditorViewController: UIViewController, UITextFieldDelegate {
     private func populateIfNeeded() {
         guard let existing else { return }
         nameField.text = existing.name
-        caloriesField.text = "\(existing.calories)"
-        proteinsField.text = "\(existing.proteins)"
-        fatsField.text = "\(existing.fats)"
-        carbsField.text = "\(existing.carbs)"
+        caloriesField.text = existing.calories.formattedOneDecimalPTBR
+        proteinsField.text = existing.proteins.formattedOneDecimalPTBR
+        fatsField.text = existing.fats.formattedOneDecimalPTBR
+        carbsField.text = existing.carbs.formattedOneDecimalPTBR
         refreshMeasureButton()
         rebuildMeasureMenu()
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField == nameField { return true }
-        let allowed = CharacterSet.decimalDigits
-        return string.unicodeScalars.allSatisfy { allowed.contains($0) }
+        if string.isEmpty { return true }
+
+        let allowed = CharacterSet(charactersIn: "0123456789,.")
+        guard string.unicodeScalars.allSatisfy({ allowed.contains($0) }) else { return false }
+
+        let current = textField.text ?? ""
+        guard let textRange = Range(range, in: current) else { return false }
+
+        let updated = current.replacingCharacters(in: textRange, with: string)
+
+        let commaCount = updated.filter { $0 == "," }.count
+        let dotCount = updated.filter { $0 == "." }.count
+        if commaCount + dotCount > 1 { return false }
+
+        let normalized = updated.replacingOccurrences(of: ",", with: ".")
+        if let sepIndex = normalized.firstIndex(of: ".") {
+            let decimalPart = normalized[normalized.index(after: sepIndex)...]
+            if decimalPart.count > 1 { return false }
+        }
+
+        return true
     }
 
-    private func strictInt(_ text: String?) -> Int? {
+    private func strictOneDecimal(_ text: String?) -> Double? {
         let value = (text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !value.isEmpty, value.allSatisfy({ $0.isNumber }) else { return nil }
-        return Int(value)
+        guard !value.isEmpty else { return nil }
+
+        let normalized = value.replacingOccurrences(of: ",", with: ".")
+        guard let number = Double(normalized) else { return nil }
+
+        let parts = normalized.split(separator: ".", omittingEmptySubsequences: false)
+        if parts.count > 2 { return nil }
+        if parts.count == 2 && parts[1].count > 1 { return nil }
+
+        return number
     }
 
     @objc private func saveTapped() {
@@ -335,12 +343,12 @@ final class FoodEditorViewController: UIViewController, UITextFieldDelegate {
         }
 
         guard
-            let calories = strictInt(caloriesField.text),
-            let proteins = strictInt(proteinsField.text),
-            let fats = strictInt(fatsField.text),
-            let carbs = strictInt(carbsField.text)
+            let calories = strictOneDecimal(caloriesField.text),
+            let proteins = strictOneDecimal(proteinsField.text),
+            let fats = strictOneDecimal(fatsField.text),
+            let carbs = strictOneDecimal(carbsField.text)
         else {
-            showValidation(title: "Valores inválidos", message: "Calorias e macros devem ser números inteiros.")
+            showValidation(title: "Valores inválidos", message: "Calorias e macros devem ser números com no máximo uma casa decimal.")
             return
         }
 
@@ -364,3 +372,4 @@ final class FoodEditorViewController: UIViewController, UITextFieldDelegate {
         present(alert, animated: true)
     }
 }
+
